@@ -3,7 +3,7 @@ source "http://rubygems.org"
 # Example:
 #   gem "activesupport", ">= 2.3.5"
 
-gem 'grape', '~> 0.2.0'
+gem 'grape', :git => 'git://github.com/intridea/grape.git'  # Used for the 3rd party Rack API.
 gem 'kramdown'
 
 # Add dependencies to develop your gem here.

@@ -146,6 +146,36 @@ describe "options: " do
       last_response.body.should == "{:apiVersion=>\"v1\", :swaggerVersion=>\"1.1\", :basePath=>\"http://example.org\", :resourcePath=>\"\", :apis=>[{:path=>\"/api/v1/something.{format}\", :operations=>[{:notes=>nil, :summary=>\"this gets something\", :nickname=>\"GET-api--version-something---format-\", :httpMethod=>\"GET\", :parameters=>[]}]}]}"
     end
   end
+  
+  context "versioned API with params" do
+    before(:all) do
+      class VersionedParamedMountedApi < Grape::API
+        prefix 'api'
+        version 'v1'
+  
+        desc 'this posts something'
+        params do
+          requires :id, type: Integer, desc: "Need an id."
+          optional :name, type: String, desc: "Name is not required."
+        end
+        post '/something' do
+          {:bla => 'something'}
+        end
+      end
+  
+      class SimpleApiWithParamsAndVersion < Grape::API
+        mount VersionedParamedMountedApi
+        add_swagger_documentation :api_version => "v1"
+      end
+    end
+  
+    def app; SimpleApiWithParamsAndVersion end
+  
+    it "parses version and places it in the path" do
+      get '/swagger_doc/api'
+      last_response.body.should == "{:apiVersion=>\"v1\", :swaggerVersion=>\"1.1\", :basePath=>\"http://example.org\", :resourcePath=>\"\", :apis=>[{:path=>\"/api/v1/something.{format}\", :operations=>[{:notes=>nil, :summary=>\"this gets something\", :nickname=>\"GET-api--version-something---format-\", :httpMethod=>\"GET\", :parameters=>[]}]}]}"
+    end
+  end
 
 
 end
